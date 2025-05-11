@@ -1,4 +1,5 @@
 import React from "react";
+import Markdown from "react-markdown";
 
 interface BlogContentProps {
   blogContent: string;
@@ -28,7 +29,7 @@ const BlogContent: React.FC<BlogContentProps> = ({ blogContent }) => {
   return (
     <div style={style.container}>
       <h2 style={style.title}>Generated Blog</h2>
-      <div style={style.content}>{blogContent}</div>
+      <Markdown>{blogContent}</Markdown>
     </div>
   );
 };
