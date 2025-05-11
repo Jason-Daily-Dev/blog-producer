@@ -2,7 +2,6 @@ import base64
 import os
 from typing import List, Optional
 
-import openai
 from blog_generator import BlogGenerator
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -10,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 load_dotenv()
+
 
 app = FastAPI()
 
@@ -21,9 +21,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Configure OpenAI
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 class BlogContent(BaseModel):
@@ -38,7 +35,9 @@ class BlogRequest(BaseModel):
 
 @app.post("/generate-blog")
 async def generate_blog(
-    prompt: str = Form(...), images: Optional[List[UploadFile]] = File(None)
+    content_prompt: str = Form(...),
+    image_prompt: str = Form(None),
+    images: Optional[List[UploadFile]] = [],
 ):
     try:
         # Convert images to base64 if provided
@@ -57,9 +56,21 @@ async def generate_blog(
         blog_generator = BlogGenerator()
 
         # Generate blog content
-        blog_content = await blog_generator.generate_blog(prompt, image_descriptions)
+        blog_content, relevant_image_url = await blog_generator.generate_blog(
+            content_prompt, image_descriptions
+        )
 
-        return {"content": blog_content, "format": "markdown"}
+        # If no images are provided, use the image_prompt to search for a relevant image
+        if not images and image_prompt:
+            relevant_image_url = blog_generator.photo_searcher.search_photo(
+                image_prompt
+            )
+
+        return {
+            "content": blog_content,
+            "image_url": relevant_image_url,
+            "format": "markdown",
+        }
 
     except HTTPException as e:
         raise e

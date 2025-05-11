@@ -4,9 +4,11 @@ import BlogPrompt from './components/BlogPrompt';
 import UploadFilesDialog from './components/UploadFilesDialog';
 import GenerateBlogButton from './components/GenerateBlogButton';
 import BlogContent from './components/BlogContent';
+import {  usePrompt } from './context/PromptContext';
 
 function App() {
-  const [prompt, setPrompt] = useState('');
+  const { contentPrompt, imagePrompt } = usePrompt();
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [blogContent, setBlogContent] = useState('');
@@ -19,13 +21,12 @@ function App() {
   };
 
   const handleSubmit = async () => {
-    if (!prompt) return;
-
     setLoading(true);
     setSuccess(false);
     try {
       const formData = new FormData();
-      formData.append('prompt', prompt);
+      formData.append('prompt', contentPrompt);
+      formData.append('imagePrompt', imagePrompt);
       images.forEach((image) => formData.append('images', image));
 
       const response = await fetch('/api/generate-blog', {
@@ -44,15 +45,15 @@ function App() {
   };
 
   return (
-    <div className="app-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-      <Title />
-      <div className="content-wrapper" style={{ width: '100%', textAlign: 'center' }}>
-        <BlogPrompt prompt={prompt} setPrompt={setPrompt} />
-        <UploadFilesDialog handleFileChange={handleFileChange} />
-        <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} disabled={loading || !prompt} />
+      <div className="app-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <Title />
+        <div className="content-wrapper" style={{ width: '100%', textAlign: 'center' }}>
+          <BlogPrompt />
+          <UploadFilesDialog handleFileChange={handleFileChange} />
+          <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} />
+        </div>
+        {blogContent && <BlogContent blogContent={blogContent} />}
       </div>
-      {blogContent && <BlogContent blogContent={blogContent} />}
-    </div>
   );
 }
 
