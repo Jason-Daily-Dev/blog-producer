@@ -3,7 +3,7 @@ import os
 from typing import List, Optional
 
 import openai
-from agents import Agent, Runner
+from blog_generator import BlogGenerator
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -53,21 +53,15 @@ async def generate_blog(
                 image_base64 = base64.b64encode(image_content).decode("utf-8")
                 image_descriptions.append(f"![]({image_base64})")
 
-        # Create agent and run it
-        agent = Agent(
-            name="BlogWriter",
-            instructions="You are a professional blog writer. Given a prompt and optional images, generate a well-structured blog post. If images are provided, include them in the appropriate places with descriptive captions. Format the output in Markdown with proper headings, paragraphs, and lists.",
-        )
+        # Initialize BlogGenerator
+        blog_generator = BlogGenerator()
 
-        user_input = f"Prompt: {prompt}"
-        if image_descriptions:
-            user_input += f"\nImages: {', '.join(image_descriptions)}"
+        # Generate blog content
+        blog_content = await blog_generator.generate_blog(prompt, image_descriptions)
 
-        result = await Runner.run(agent, user_input)
-
-        return {"content": result.final_output, "format": "markdown"}
+        return {"content": blog_content, "format": "markdown"}
 
     except HTTPException as e:
         raise e
     except Exception as e:
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail=str(e))
