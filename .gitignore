@@ -1,0 +1,18 @@
+# Node.js
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Environment files
+backend/.env
+
+# Docker
+*.log
+docker-compose.override.yml
+
+.venv/

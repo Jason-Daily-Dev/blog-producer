@@ -1,0 +1,15 @@
+# Ignore node_modules
+node_modules
+
+# Ignore Python cache
+__pycache__
+*.pyc
+
+# Ignore environment files
+backend/.env
+
+# Ignore macOS files
+.DS_Store
+
+# Ignore logs
+*.log
