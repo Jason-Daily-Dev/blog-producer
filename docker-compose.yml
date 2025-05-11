@@ -21,6 +21,9 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - node_modules_cache:/app/node_modules
     environment:
       - VITE_API_URL=http://backend:8000
+
+volumes:
+  node_modules_cache:
