@@ -12,6 +12,7 @@ function App() {
   const [success, setSuccess] = useState(false);
   const [blogContent, setBlogContent] = useState('');
   const [images, setImages] = useState<File[]>([]);
+  const [imageUrl, setImageUrl] = useState<string | null>(null); // State for background image URL
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -38,6 +39,7 @@ function App() {
 
       const data = await response.json();
       setBlogContent(data.content || '');
+      setImageUrl(data.image_url || null); // Set the image URL from the response
       setSuccess(true);
     } catch (error) {
       console.error('Error generating blog:', error);
@@ -53,7 +55,7 @@ function App() {
           <BlogPrompt />
           <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} />
         </div>
-        {blogContent && <BlogContent blogContent={blogContent} />}
+        {blogContent && <BlogContent blogContent={blogContent} imageUrl={imageUrl} />}
       </div>
   );
 }
