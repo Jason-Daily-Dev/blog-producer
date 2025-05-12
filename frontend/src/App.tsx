@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import Title from './components/Title';
 import BlogPrompt from './components/BlogPrompt';
-import UploadFilesDialog from './components/UploadFilesDialog';
 import GenerateBlogButton from './components/GenerateBlogButton';
 import BlogContent from './components/BlogContent';
-import {  usePrompt } from './context/PromptContext';
+import { usePrompt } from './context/PromptContext';
 
 function App() {
   const { contentPrompt, imagePrompt } = usePrompt();
@@ -24,14 +23,17 @@ function App() {
     setLoading(true);
     setSuccess(false);
     try {
-      const formData = new FormData();
-      formData.append('prompt', contentPrompt);
-      formData.append('imagePrompt', imagePrompt);
-      images.forEach((image) => formData.append('images', image));
+      const requestBody = {
+        content_prompt: contentPrompt,
+        image_prompt: imagePrompt,
+      };
 
       const response = await fetch('/api/generate-blog', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
@@ -49,7 +51,6 @@ function App() {
         <Title />
         <div className="content-wrapper" style={{ width: '100%', textAlign: 'center' }}>
           <BlogPrompt />
-          <UploadFilesDialog handleFileChange={handleFileChange} />
           <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} />
         </div>
         {blogContent && <BlogContent blogContent={blogContent} />}
