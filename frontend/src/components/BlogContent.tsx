@@ -9,7 +9,7 @@ interface BlogContentProps {
 
 const BlogContent: React.FC<BlogContentProps> = ({ blogContent, imageUrl, blogFormat }) => {
   const [backgroundOpacity, setBackgroundOpacity] = useState(0.5); // State for background transparency
-  const [textColor, setTextColor] = useState("#fff"); // State for text color
+  const [textColor, setTextColor] = useState("#2c3d3f"); // State for text color
 
   const handleBackgroundOpacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
@@ -28,22 +28,27 @@ const BlogContent: React.FC<BlogContentProps> = ({ blogContent, imageUrl, blogFo
     container: {
       marginTop: "20px",
       padding: "20px",
-      backgroundColor: imageUrl ? `rgba(0, 0, 0, ${backgroundOpacity})` : "#fff", // Use RGBA for adjustable transparency
+      position: "relative", // Enable layering
       borderRadius: "8px",
       boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-      backgroundImage: imageUrl ? `url(${imageUrl})` : undefined, // Set background image if provided
+      overflow: "hidden", // Ensure overlay stays within bounds
+    },
+    backgroundImage: {
+      position: "absolute" as const,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundImage: imageUrl ? `url(${imageUrl})` : undefined,
       backgroundSize: "cover",
       backgroundPosition: "center",
-      color: textColor, // Use dynamic text color
-    },
-    title: {
-      fontSize: "1.5rem",
-      fontWeight: "bold" as const,
-      marginBottom: "10px",
+      opacity: backgroundOpacity, // Apply opacity to the image
+      zIndex: 1, // Place it behind the content
     },
     content: {
-      fontSize: "1rem",
-      lineHeight: "1.6",
+      position: "relative" as const,
+      zIndex: 2, // Place content above the background
+      color: textColor, // Dynamically apply text color
     },
     controls: {
       marginTop: "10px",
@@ -56,12 +61,15 @@ const BlogContent: React.FC<BlogContentProps> = ({ blogContent, imageUrl, blogFo
   return (
     <div>
       <div style={style.container}>
-        <h2 style={style.title}>Generated Blog</h2>
-        {blogFormat === "html" ? (
-          <div dangerouslySetInnerHTML={{ __html: blogContent }} />
-        ) : (
-          <Markdown>{blogContent}</Markdown>
-        )}
+        <div style={style.backgroundImage} /> {/* Background image layer */}
+        <div style={style.content}>
+          <h2>Generated Blog</h2>
+          {blogFormat === "html" ? (
+            <div dangerouslySetInnerHTML={{ __html: blogContent }} />
+          ) : (
+            <Markdown>{blogContent}</Markdown>
+          )}
+        </div>
       </div>
       <div style={style.controls}>
         <label>
@@ -72,7 +80,7 @@ const BlogContent: React.FC<BlogContentProps> = ({ blogContent, imageUrl, blogFo
             max="1"
             step="0.1"
             value={backgroundOpacity}
-            onChange={handleBackgroundOpacityChange} // Use the new handler
+            onChange={handleBackgroundOpacityChange}
           />
         </label>
         <label>
@@ -80,7 +88,7 @@ const BlogContent: React.FC<BlogContentProps> = ({ blogContent, imageUrl, blogFo
           <input
             type="color"
             value={textColor}
-            onChange={handleTextColorChange} // Use the new handler
+            onChange={handleTextColorChange}
           />
         </label>
       </div>
