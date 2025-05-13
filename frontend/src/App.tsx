@@ -6,20 +6,14 @@ import BlogContent from './components/BlogContent';
 import { usePrompt } from './context/PromptContext';
 
 function App() {
-  const { contentPrompt, imagePrompt } = usePrompt();
+  const { contentPrompt } = usePrompt();
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [blogContent, setBlogContent] = useState('');
-  const [images, setImages] = useState<File[]>([]);
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined); // State for background image URL
   const [blogFormat, setBlogFormat] = useState<string>('html'); // State for background image URL
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      setImages(Array.from(event.target.files));
-    }
-  };
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -27,7 +21,7 @@ function App() {
     try {
       const requestBody = {
         content_prompt: contentPrompt,
-        image_prompt: imagePrompt,
+        style: "html", // Specify the format as "html"
       };
 
       const response = await fetch('/api/generate-blog', {
@@ -41,7 +35,7 @@ function App() {
       const data = await response.json();
       setBlogContent(data.content || '');
       setImageUrl(data.image_url || null); // Set the image URL from the response
-      setBlogFormat(data.style || 'html'); // Set the image URL from the response
+      setBlogFormat(data.format || 'html'); // Set the blog format from the response
       setSuccess(true);
     } catch (error) {
       console.error('Error generating blog:', error);
