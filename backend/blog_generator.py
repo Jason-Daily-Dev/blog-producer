@@ -1,3 +1,5 @@
+import ast
+import json
 import os
 
 import openai
@@ -16,8 +18,11 @@ class BlogGenerator:
 
     async def generate_blog(self, prompt: str):
         agent_instructions = (
-            "You are a professional blog writer. Given a prompt and optional images, generate a well-structured blog post. "
-            "If images are provided, include them in the appropriate places with descriptive captions. Format the output in Markdown with proper headings, paragraphs, and lists."
+            "You are a professional blog writer. Given a prompt, generate a well-structured blog post. "
+            "If the prompt explicitly mentions 'markdown', format the blog content in Markdown. Otherwise, use HTML as the default format. "
+            "Output: Return a raw Python dictionary with the following keys (do not wrap it in Markdown or any other formatting): \n"
+            "- 'blog_content': The generated blog post as a string.\n"
+            "- 'style': The writing style used, either 'html' or 'markdown'."
         )
 
         user_input = f"Prompt: {prompt}"
@@ -25,6 +30,12 @@ class BlogGenerator:
         agent = Agent(name="BlogWriter", instructions=agent_instructions)
         result = await Runner.run(agent, user_input)
 
-        blog_content = result.final_output
+        final_output = result.final_output
 
-        return blog_content
+        # Safely evaluate the Python dictionary string
+        final_output = ast.literal_eval(final_output)
+
+        blog_content = final_output["blog_content"]
+        style = final_output["style"]
+
+        return blog_content, style

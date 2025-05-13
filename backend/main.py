@@ -23,11 +23,6 @@ app.add_middleware(
 )
 
 
-class BlogContent(BaseModel):
-    content: str
-    format: str  # "markdown" or "html"
-
-
 class BlogRequest(BaseModel):
     content_prompt: str
     image_prompt: Optional[str] = None
@@ -44,7 +39,7 @@ async def generate_blog(request: BlogRequest):
         blog_generator = BlogGenerator()
 
         # Generate blog content
-        blog_content = await blog_generator.generate_blog(content_prompt)
+        blog_content, style = await blog_generator.generate_blog(content_prompt)
 
         # If no images are provided, use the image_prompt to search for a relevant image
         if image_prompt:
@@ -54,10 +49,11 @@ async def generate_blog(request: BlogRequest):
         else:
             relevant_image_url = None
 
+        # Return the blog content in the requested format
         return {
             "content": blog_content,
             "image_url": relevant_image_url,
-            "format": "markdown",
+            "style": style,
         }
 
     except HTTPException as e:
