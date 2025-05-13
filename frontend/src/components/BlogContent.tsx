@@ -14,11 +14,13 @@ const BlogContent: React.FC<BlogContentProps> = ({ blogContent, imageUrl, blogFo
   const handleBackgroundOpacityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     if (!isNaN(value)) {
+      console.log("Background opacity changed to:", value);
       setBackgroundOpacity(value);
     }
   };
 
   const handleTextColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Text color changed to:", e.target.value);
     setTextColor(e.target.value);
   };
 
