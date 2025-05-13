@@ -1,7 +1,3 @@
-import base64
-import os
-from typing import List, Optional
-
 from blog_generator import BlogGenerator
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, UploadFile
@@ -25,7 +21,7 @@ app.add_middleware(
 
 class BlogRequest(BaseModel):
     content_prompt: str
-    image_prompt: Optional[str] = None
+    style: str = "html"  # "html" is the default format
 
 
 @app.post("/generate-blog")
@@ -33,27 +29,19 @@ async def generate_blog(request: BlogRequest):
     try:
         # Extract fields from the request
         content_prompt = request.content_prompt
-        image_prompt = request.image_prompt
 
         # Initialize BlogGenerator
         blog_generator = BlogGenerator()
 
         # Generate blog content
-        blog_content, style = await blog_generator.generate_blog(content_prompt)
+        blog_content, relevant_style, relevant_image_url = (
+            await blog_generator.generate_blog(content_prompt)
+        )
 
-        # If no images are provided, use the image_prompt to search for a relevant image
-        if image_prompt:
-            relevant_image_url = blog_generator.photo_searcher.search_photo(
-                image_prompt
-            )
-        else:
-            relevant_image_url = None
-
-        # Return the blog content in the requested format
         return {
             "content": blog_content,
             "image_url": relevant_image_url,
-            "style": style,
+            "format": relevant_style,
         }
 
     except HTTPException as e:
