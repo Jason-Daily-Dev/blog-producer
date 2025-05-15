@@ -1,9 +1,7 @@
-import os
-
 from auth.auth import get_auth
 from blog_generator import BlogGenerator
 from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Security
+from fastapi import APIRouter, Depends, HTTPException, Request, Security
 from fastapi_auth0 import Auth0User
 from pydantic import BaseModel
 
@@ -42,9 +40,11 @@ async def generate_blog(
         blog_generator = BlogGenerator()
 
         # Generate blog content
-        blog_content, relevant_style, relevant_image_url = (
-            await blog_generator.generate_blog(content_prompt)
-        )
+        (
+            blog_content,
+            relevant_style,
+            relevant_image_url,
+        ) = await blog_generator.generate_blog(content_prompt)
 
         return {
             "content": blog_content,

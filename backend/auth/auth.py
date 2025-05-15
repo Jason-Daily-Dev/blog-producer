@@ -1,9 +1,6 @@
 import os
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI
-from fastapi.openapi.models import OAuthFlowImplicit
-from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi_auth0 import Auth0
 
 # Load environment variables
