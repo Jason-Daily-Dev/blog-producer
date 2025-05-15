@@ -1,6 +1,17 @@
+import os
+
+from auth.auth import get_auth
 from blog_generator import BlogGenerator
-from fastapi import APIRouter, FastAPI, HTTPException
+from dotenv import load_dotenv
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Security
+from fastapi_auth0 import Auth0User
 from pydantic import BaseModel
+
+# Load environment variables
+load_dotenv()
+
+# Get Auth0 instance
+auth = get_auth()
 
 
 class BlogRequest(BaseModel):
@@ -12,7 +23,10 @@ router = APIRouter(tags=["blog"])
 
 
 @router.post("/generate-blog")
-async def generate_blog(request: BlogRequest):
+async def generate_blog(
+    request: BlogRequest,
+    user: Auth0User = Security(auth.get_user, scopes=["write:blog"]),
+):
     try:
         # Extract fields from the request
         content_prompt = request.content_prompt
