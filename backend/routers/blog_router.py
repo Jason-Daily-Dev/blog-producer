@@ -3,7 +3,7 @@ import os
 from auth.auth import get_auth
 from blog_generator import BlogGenerator
 from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, FastAPI, HTTPException, Security
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, Security
 from fastapi_auth0 import Auth0User
 from pydantic import BaseModel
 
@@ -19,7 +19,14 @@ class BlogRequest(BaseModel):
     style: str = "html"  # "html" is the default format
 
 
-router = APIRouter(tags=["blog"])
+router = APIRouter(tags=["blog"], dependencies=[Depends(auth.implicit_scheme)])
+
+
+@router.get("/check-user")
+async def check_user(
+    request: Request, user: Auth0User = Security(auth.get_user, scopes=["write:blog"])
+):
+    return {"message": f"Hello, {user}"}
 
 
 @router.post("/generate-blog")

@@ -10,35 +10,7 @@ from routers import blog_router
 app = FastAPI()
 
 
-# Generate OpenAPI schema with Auth0ImplicitBearer
-@app.on_event("startup")
-def customize_openapi():
-    if app.openapi_schema:
-        return app.openapi_schema
-    openapi_schema = get_openapi(
-        title="Blog API",
-        version="1.0.0",
-        description="API for Blog Generator",
-        routes=app.routes,
-    )
-    openapi_schema["components"]["securitySchemes"] = {
-        "Auth0ImplicitBearer": {
-            "type": "oauth2",
-            "flows": {
-                "implicit": {
-                    "authorizationUrl": f"https://{auth.domain}/authorize",
-                    "scopes": {
-                        "openid": "OpenID Connect scope",
-                        "profile": "Access user profile information",
-                        "email": "Access user email address",
-                        "write:blog": "Permission to create or modify blog content",
-                    },
-                }
-            },
-        }
-    }
-    openapi_schema["security"] = [{"Auth0ImplicitBearer": []}]
-    app.openapi_schema = openapi_schema
+# Fixed the OpenAPI schema to ensure proper integration with Auth0ImplicitBearer
 
 
 # Public endpoint

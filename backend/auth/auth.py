@@ -13,19 +13,12 @@ load_dotenv()
 auth = Auth0(
     domain=os.getenv("AUTH0_DOMAIN"),
     api_audience=os.getenv("AUTH0_API_AUDIENCE"),
-)
-
-# Add Auth0ImplicitBearer scheme
-auth.implicit_scheme = OAuthFlowsModel(
-    implicit=OAuthFlowImplicit(
-        authorizationUrl=f"https://{os.getenv('AUTH0_DOMAIN')}/authorize",
-        scopes={
-            "openid": "OpenID Connect scope",
-            "profile": "Access user profile information",
-            "email": "Access user email address",
-            "write:blog": "Permission to create or modify blog content",
-        },
-    )
+    scopes={
+        "openid": "OpenID Connect scope",
+        "profile": "Access user profile information",
+        "email": "Access user email address",
+        "write:blog": "Permission to create or modify blog content",
+    },
 )
 
 
