@@ -18,15 +18,19 @@
         "justMyCode": true
       },
       {
-        "name": "Debug FastAPI with Uvicorn",
+        "name": "Attach to Uvicorn",
         "type": "debugpy",
-        "request": "launch",
-        "program": "${workspaceFolder}/backend/main.py",
-        "args": ["--reload"],
-        "console": "integratedTerminal",
-        "env": {
-          "PYTHONPATH": "${workspaceFolder}/backend"
-        }
+        "request": "attach",
+        "connect": {
+          "host": "localhost",
+          "port": 5678
+        },
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceFolder}/backend",
+            "remoteRoot": "${workspaceFolder}/backend"
+          }
+        ]
       }
     ]
   }
