@@ -1,0 +1,13 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.3.0  # Use the latest stable version
+    hooks:
+      - id: black
+        files: ^backend/  # Only apply to files in the `backend` folder
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.2.1  # Use the latest stable version
+    hooks:
+      - id: autoflake
+        args: ["--remove-all-unused-imports", "--recursive", "--remove-unused-variables", "--in-place", "."]
+        files: ^backend/  # Only apply to files in the `backend` folder
