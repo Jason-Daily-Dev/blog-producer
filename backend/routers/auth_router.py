@@ -21,7 +21,7 @@ async def me(request: Request):
     try:
         decoded_token = jwt.decode(token, options={"verify_signature": False})
         permissions = decoded_token.get("permissions", [])
-    except jwt.PyJWTError as e:
+    except jwt.exceptions.PyJWTError as e:
         raise HTTPException(status_code=400, detail=f"Invalid token: {str(e)}")
 
     async with httpx.AsyncClient() as client:
