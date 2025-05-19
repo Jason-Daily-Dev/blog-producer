@@ -6,6 +6,7 @@ import GenerateBlogButton from './components/GenerateBlogButton';
 import BlogContent from './components/BlogContent';
 import { usePrompt } from './context/PromptContext';
 import { useAuth0 } from '@auth0/auth0-react';
+import TopRightUserInfo from './components/TopRightUserInfo';
 
 function App() {
   const { contentPrompt } = usePrompt();
@@ -60,28 +61,14 @@ function App() {
   return (
     <Router>
       {isAuthenticated ? (
-        <div className="app-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div className="app-container" style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+          <TopRightUserInfo />
           <Title />
           <div className="content-wrapper" style={{ width: '100%', textAlign: 'center' }}>
             <BlogPrompt />
             <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} />
           </div>
-          {blogContent && <BlogContent blogContent={blogContent} imageUrl={imageUrl} blogFormat={blogFormat}/>}
-          <Routes>
-            <Route path="/" element={
-              <div>
-                <h1>Auth0 Integration</h1>
-                {isAuthenticated ? (
-                  <div>
-                    <p>Welcome, {user?.name}!</p>
-                    <button onClick={() => logout({ returnTo: window.location.origin })}>Log Out</button>
-                  </div>
-                ) : (
-                  <button onClick={loginWithRedirect}>Log In</button>
-                )}
-              </div>
-            } />
-          </Routes>
+          {blogContent && <BlogContent blogContent={blogContent} imageUrl={imageUrl} blogFormat={blogFormat} />}
         </div>
       ) : (
         <LandingPage />
