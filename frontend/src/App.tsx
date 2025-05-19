@@ -49,31 +49,43 @@ function App() {
     }
   };
 
+  const LandingPage = () => (
+    <div style={{ textAlign: 'center', padding: '2rem', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+      <h1>AI Blog Generator</h1>
+      <p>Create intelligent, image-rich blog posts with a single prompt.</p>
+      <button onClick={() => loginWithRedirect()}>Log In / Sign Up</button>
+    </div>
+  );
+
   return (
     <Router>
-      <div className="app-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-        <Title />
-        <div className="content-wrapper" style={{ width: '100%', textAlign: 'center' }}>
-          <BlogPrompt />
-          <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} />
+      {isAuthenticated ? (
+        <div className="app-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+          <Title />
+          <div className="content-wrapper" style={{ width: '100%', textAlign: 'center' }}>
+            <BlogPrompt />
+            <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} />
+          </div>
+          {blogContent && <BlogContent blogContent={blogContent} imageUrl={imageUrl} blogFormat={blogFormat}/>}
+          <Routes>
+            <Route path="/" element={
+              <div>
+                <h1>Auth0 Integration</h1>
+                {isAuthenticated ? (
+                  <div>
+                    <p>Welcome, {user?.name}!</p>
+                    <button onClick={() => logout({ returnTo: window.location.origin })}>Log Out</button>
+                  </div>
+                ) : (
+                  <button onClick={loginWithRedirect}>Log In</button>
+                )}
+              </div>
+            } />
+          </Routes>
         </div>
-        {blogContent && <BlogContent blogContent={blogContent} imageUrl={imageUrl} blogFormat={blogFormat}/>}
-        <Routes>
-          <Route path="/" element={
-            <div>
-              <h1>Auth0 Integration</h1>
-              {isAuthenticated ? (
-                <div>
-                  <p>Welcome, {user?.name}!</p>
-                  <button onClick={() => logout({ returnTo: window.location.origin })}>Log Out</button>
-                </div>
-              ) : (
-                <button onClick={loginWithRedirect}>Log In</button>
-              )}
-            </div>
-          } />
-        </Routes>
-      </div>
+      ) : (
+        <LandingPage />
+      )}
     </Router>
   );
 }
