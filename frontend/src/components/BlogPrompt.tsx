@@ -2,7 +2,7 @@ import React from "react";
 import { usePrompt } from "../context/PromptContext";
 
 const BlogPrompt: React.FC = () => {
-  const { contentPrompt, setContentPrompt, imagePrompt, setImagePrompt } = usePrompt();
+  const { contentPrompt, setContentPrompt } = usePrompt();
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>

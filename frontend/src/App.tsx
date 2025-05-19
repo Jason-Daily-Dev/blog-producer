@@ -17,20 +17,6 @@ function App() {
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined); // State for background image URL
   const [blogFormat, setBlogFormat] = useState<string>('html'); // State for background image URL
 
-  const fetchProtectedData = async () => {
-    try {
-      const token = await getAccessTokenSilently();
-      const response = await fetch('/api/me', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      console.log('Protected data:', data);
-    } catch (error) {
-      console.error('Error fetching protected data:', error);
-    }
-  };
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -80,7 +66,6 @@ function App() {
                 <div>
                   <p>Welcome, {user?.name}!</p>
                   <button onClick={() => logout({ returnTo: window.location.origin })}>Log Out</button>
-                  <button onClick={fetchProtectedData}>Fetch Protected Data</button>
                 </div>
               ) : (
                 <button onClick={loginWithRedirect}>Log In</button>

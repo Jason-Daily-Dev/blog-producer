@@ -11,10 +11,9 @@ const PromptContext = createContext<PromptContextProps | undefined>(undefined);
 
 export const PromptProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [contentPrompt, setContentPrompt] = useState("");
-  const [imagePrompt, setImagePrompt] = useState("");
 
   return (
-    <PromptContext.Provider value={{ contentPrompt, setContentPrompt, imagePrompt, setImagePrompt }}>
+    <PromptContext.Provider value={{ contentPrompt, setContentPrompt }}>
       {children}
     </PromptContext.Provider>
   );
