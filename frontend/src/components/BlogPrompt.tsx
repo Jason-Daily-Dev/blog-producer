@@ -5,8 +5,7 @@ const BlogPrompt: React.FC = () => {
   const { contentPrompt, setContentPrompt } = usePrompt();
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
-      <div style={{ display: "flex", gap: "20px" }}>
+    <div style={{width: "100%",  display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
         <div style={{ flex: 1, backgroundColor: "#ADD8E6", padding: "20px", borderRadius: "8px" }}>
           <label>
             Blog Content Instruction:
@@ -18,7 +17,6 @@ const BlogPrompt: React.FC = () => {
             />
           </label>
         </div>
-      </div>
     </div>
   );
 };

@@ -61,10 +61,10 @@ function App() {
   return (
     <Router>
       {isAuthenticated ? (
-        <div className="app-container" style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div className="app-container" style={{width: "100%", position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
           <TopRightUserInfo />
           <Title />
-          <div className="content-wrapper" style={{ width: '100%', textAlign: 'center' }}>
+          <div className="content-wrapper" style={{ width: '100%', textAlign: 'center', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <BlogPrompt />
             <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} />
           </div>
