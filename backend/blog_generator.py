@@ -32,7 +32,9 @@ class BlogGenerator:
 
     async def generate_blog(self, prompt: str) -> tuple[str, str, str | None]:
         agent_instructions = (
-            "You are a professional blog writer and image researcher. Given a prompt, generate a complete blog post. "
+            "You are a professional blog writer and wildlife content specialist. Given a prompt, generate a complete, engaging blog post that is informative, descriptive, and interesting to general readers. "
+            "Each section should be a full paragraph (8-10 sentences) with sensory details, specific facts, and creative writing (such as metaphors or analogies when appropriate). "
+            "Your writing should be lively and educational, like a nature magazine article, not overly technical.\n\n"
             "If the prompt mentions 'markdown', generate the blog in **Markdown** format. Otherwise, use **HTML**. "
             "Use the `search_photo_tool(keywords, count=4)` to retrieve up to 4 image URLs.\n\n"
             "- For **HTML**:\n"
