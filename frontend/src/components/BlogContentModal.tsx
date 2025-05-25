@@ -8,10 +8,14 @@ interface BlogContentModalProps {
   blogContent: string;
   imageUrl?: string;
   blogFormat: string;
+  setBlogContent: (content: string) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  setImageUrl: (url: string | undefined) => void;
+  setBlogFormat: (format: string) => void;
 }
 
-const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent, imageUrl, blogFormat }) => {
-  const [open, setOpen] = useState(true);
+const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent,setBlogContent, imageUrl, blogFormat, open, setOpen, setBlogFormat, setImageUrl }) => {
   const [minimized, setMinimized] = useState(false);
   const [backgroundOpacity, setBackgroundOpacity] = useState(0.7);
   const [textColor, setTextColor] = useState('#333');
@@ -34,6 +38,9 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent, imageU
     setMinimized(false);
     setBackgroundOpacity(0.5);
     setTextColor('#333');
+    setBlogContent(''); // Clear the blog content
+    setImageUrl(undefined); // Clear the image URL
+    setBlogFormat('html'); // Reset the blog format
   };
 
   // Remove embedded images from the blog content

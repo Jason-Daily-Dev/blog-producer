@@ -116,8 +116,11 @@ function App() {
                 blogContent={blogContent}
                 imageUrl={imageUrl}
                 blogFormat={blogFormat}
-                open={open} // Pass the open state to the modal
-                setOpen={setOpen} // Pass the setOpen function to the modal
+                open={open} // Pass the open state to control modal visibility
+                setOpen={setOpen} // Pass the setOpen function to allow modal state updates
+                setBlogContent={setBlogContent} // Pass setBlogContent to allow resetting content
+                setImageUrl={setImageUrl} // Pass setImageUrl to allow resetting image URL
+                setBlogFormat={setBlogFormat} // Pass setBlogFormat to allow resetting blog format
               />
             )}
           </Box>
