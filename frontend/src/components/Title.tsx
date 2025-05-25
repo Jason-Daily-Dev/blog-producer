@@ -1,29 +1,25 @@
 import React from "react";
+import { Box, Typography } from "@mui/material";
 
 const Title: React.FC = () => {
-  const style = {
-    container: {
-      textAlign: "center" as const,
-      marginBottom: "20px",
-    },
-    title: {
-      fontSize: "2.5rem",
-      fontWeight: "bold" as const,
-      color: "#333",
-    },
-    subtitle: {
-      fontSize: "1.2rem",
-      color: "#666",
-    },
-  };
-
   return (
-    <div style={style.container}>
-      <h1 style={style.title}>Blog Producer</h1>
-      <p style={style.subtitle}>
-        Generate high-quality blog content instantly with our AI-powered blog producer.
-      </p>
-    </div>
+    <Box sx={{ textAlign: "center", marginBottom: "20px" }}>
+      <Typography
+        variant="h2"
+        component="h1"
+        gutterBottom
+        sx={{
+          color: "white", // Adjust font color for better contrast
+          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.7)", // Add text shadow for readability
+        }}
+      >
+        Blog Producer
+      </Typography>
+      <Typography variant="subtitle1" color="textSecondary">
+        Generate high-quality blog content instantly with our AI-powered blog
+        producer.
+      </Typography>
+    </Box>
   );
 };
 

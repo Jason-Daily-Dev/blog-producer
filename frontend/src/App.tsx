@@ -7,6 +7,8 @@ import BlogContent from './components/BlogContent';
 import { usePrompt } from './context/PromptContext';
 import { useAuth0 } from '@auth0/auth0-react';
 import TopRightUserInfo from './components/TopRightUserInfo';
+import { Box, Button, Typography, Container } from '@mui/material';
+import AppBackground from './components/AppBackground';
 
 function App() {
   const { contentPrompt } = usePrompt();
@@ -51,28 +53,74 @@ function App() {
   };
 
   const LandingPage = () => (
-    <div style={{ textAlign: 'center', padding: '2rem', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      <h1>AI Blog Generator</h1>
-      <p>Create intelligent, image-rich blog posts with a single prompt.</p>
-      <button onClick={() => loginWithRedirect()}>Log In / Sign Up</button>
-    </div>
+    <Container
+      sx={{
+        textAlign: 'center',
+        padding: '2rem',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Typography variant="h3" gutterBottom>
+        AI Blog Generator
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        Create intelligent, image-rich blog posts with a single prompt.
+      </Typography>
+      <Button variant="contained" color="primary" onClick={() => loginWithRedirect()}>
+        Log In / Sign Up
+      </Button>
+    </Container>
   );
 
   return (
     <Router>
-      {isAuthenticated ? (
-        <div className="app-container" style={{width: "100%", position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-          <TopRightUserInfo />
-          <Title />
-          <div className="content-wrapper" style={{ width: '100%', textAlign: 'center', justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <BlogPrompt />
-            <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} />
-          </div>
-          {blogContent && <BlogContent blogContent={blogContent} imageUrl={imageUrl} blogFormat={blogFormat} />}
-        </div>
-      ) : (
-        <LandingPage />
-      )}
+      <AppBackground>
+        {isAuthenticated ? (
+          <Box
+            className="app-container"
+            sx={{
+              width: '100%',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '100vh',
+            }}
+          >
+            <TopRightUserInfo />
+            <Title />
+            <Box
+              className="content-wrapper"
+              sx={{
+                width: '100%',
+                textAlign: 'center',
+                justifyContent: 'center',
+                alignItems: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
+              }}
+            >
+              <BlogPrompt />
+              <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} />
+            </Box>
+            {blogContent && (
+              <BlogContent
+                blogContent={blogContent}
+                imageUrl={imageUrl}
+                blogFormat={blogFormat}
+              />
+            )}
+          </Box>
+        ) : (
+          <LandingPage />
+        )}
+      </AppBackground>
     </Router>
   );
 }
