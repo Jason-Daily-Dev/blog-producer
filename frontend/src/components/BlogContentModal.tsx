@@ -36,6 +36,9 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent, imageU
     setTextColor('#333');
   };
 
+  // Remove embedded images from the blog content
+  const sanitizedBlogContent = blogContent.replace(/<img[^>]*>/g, ''); // Strip out <img> tags
+
   return (
     <Modal open={open} onClose={handleClose}>
       <Box
@@ -140,9 +143,9 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent, imageU
               }}
             >
               {blogFormat === 'html' ? (
-                <div dangerouslySetInnerHTML={{ __html: blogContent }} />
+                <div dangerouslySetInnerHTML={{ __html: sanitizedBlogContent }} />
               ) : (
-                <pre>{blogContent}</pre>
+                <pre>{sanitizedBlogContent}</pre>
               )}
             </Box>
           </>
