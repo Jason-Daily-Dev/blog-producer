@@ -33,7 +33,7 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
   setImageUrl,
 }) => {
   const [minimized, setMinimized] = useState(false);
-  const [backgroundOpacity, setBackgroundOpacity] = useState(0.7);
+  const [backgroundOpacity, setBackgroundOpacity] = useState(0.3);
   const [textColor, setTextColor] = useState('#333');
   const [fontFamily, setFontFamily] = useState<string>('serif');
   const [fontWeight, setFontWeight] = useState<number>(600);
