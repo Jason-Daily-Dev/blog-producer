@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { Box, Modal, IconButton, Typography, Slider, TextField } from '@mui/material';
+import {
+  Box,
+  Modal,
+  IconButton,
+  Typography,
+  Slider,
+  TextField,
+} from '@mui/material';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import ExpandIcon from '@mui/icons-material/Expand';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { MenuItem } from '@mui/material';
 interface BlogContentModalProps {
   blogContent: string;
   imageUrl?: string;
@@ -15,10 +22,21 @@ interface BlogContentModalProps {
   setBlogFormat: (format: string) => void;
 }
 
-const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent,setBlogContent, imageUrl, blogFormat, open, setOpen, setBlogFormat, setImageUrl }) => {
+const BlogContentModal: React.FC<BlogContentModalProps> = ({
+  blogContent,
+  setBlogContent,
+  imageUrl,
+  blogFormat,
+  open,
+  setOpen,
+  setBlogFormat,
+  setImageUrl,
+}) => {
   const [minimized, setMinimized] = useState(false);
   const [backgroundOpacity, setBackgroundOpacity] = useState(0.7);
   const [textColor, setTextColor] = useState('#333');
+  const [fontFamily, setFontFamily] = useState<string>('serif');
+  const [fontWeight, setFontWeight] = useState<number>(600);
 
   const handleClose = () => setOpen(false);
   const handleMinimize = () => setMinimized(!minimized);
@@ -38,13 +56,12 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent,setBlog
     setMinimized(false);
     setBackgroundOpacity(0.5);
     setTextColor('#333');
-    setBlogContent(''); // Clear the blog content
-    setImageUrl(undefined); // Clear the image URL
-    setBlogFormat('html'); // Reset the blog format
+    setBlogContent('');
+    setImageUrl(undefined);
+    setBlogFormat('html');
   };
 
-  // Remove embedded images from the blog content
-  const sanitizedBlogContent = blogContent.replace(/<img[^>]*>/g, ''); // Strip out <img> tags
+  const sanitizedBlogContent = blogContent.replace(/<img[^>]*>/g, '');
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -104,6 +121,7 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent,setBlog
                 </IconButton>
               </Box>
             </Box>
+
             <Box
               sx={{
                 display: 'flex',
@@ -112,6 +130,8 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent,setBlog
                 padding: '10px',
                 backgroundColor: '#f9f9f9',
                 borderBottom: '1px solid #ddd',
+                flexWrap: 'wrap',
+                gap: '10px',
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -122,9 +142,10 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent,setBlog
                   min={0}
                   max={1}
                   step={0.1}
-                  sx={{ width: '150px' }}
+                  sx={{ width: '120px' }}
                 />
               </Box>
+
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Typography variant="body2">Text Color:</Typography>
                 <TextField
@@ -135,7 +156,51 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent,setBlog
                   sx={{ width: '50px', padding: 0 }}
                 />
               </Box>
+
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Typography variant="body2">Font Family:</Typography>
+                <TextField
+                  select
+                  value={fontFamily}
+                  onChange={(e) => setFontFamily(e.target.value)}
+                  size="small"
+                  sx={{
+                    minWidth: '150px',
+                    fontFamily: fontFamily,
+                    borderRadius: '20px',
+                    backgroundColor: '#f0f0f0',
+                    '& .MuiInputBase-root': {
+                      fontFamily: fontFamily,
+                    },
+                  }}
+                >
+                  <MenuItem value="serif">Serif</MenuItem>
+                  <MenuItem value="sans-serif">Sans Serif</MenuItem>
+                  <MenuItem value="monospace">Monospace</MenuItem>
+                  <MenuItem value="'Playfair Display', serif">Playfair Display</MenuItem>
+                  <MenuItem value="'DM Sans', sans-serif">DM Sans</MenuItem>
+                  <MenuItem value="'Poppins', sans-serif">Poppins</MenuItem>
+                </TextField>
+              </Box>
+
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Typography variant="body2">Font Weight:</Typography>
+                <TextField
+                  select
+                  SelectProps={{ native: true }}
+                  value={fontWeight}
+                  onChange={(e) => setFontWeight(Number(e.target.value))}
+                  size="small"
+                >
+                  <option value={300}>300</option>
+                  <option value={400}>400 (Normal)</option>
+                  <option value={600}>600</option>
+                  <option value={700}>700 (Bold)</option>
+                  <option value={900}>900</option>
+                </TextField>
+              </Box>
             </Box>
+
             <Box
               sx={{
                 flex: 1,
@@ -143,10 +208,12 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent,setBlog
                 overflowY: 'auto',
                 background: imageUrl
                   ? `linear-gradient(rgba(255, 255, 255, ${1 - backgroundOpacity}), rgba(255, 255, 255, ${1 - backgroundOpacity})), url(${imageUrl})`
-                  : undefined, // Apply a single blended background
+                  : undefined,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 color: textColor,
+                fontFamily: fontFamily,
+                fontWeight: fontWeight,
               }}
             >
               {blogFormat === 'html' ? (
