@@ -48,14 +48,13 @@ const globalBlogStyle = `
     border-radius: 10px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     flex-shrink: 0;
-    margin-right: 50px;
-    margin-left: 50px;
+    margin-right: 20px;
+    margin-left: 20px;
   }
 
   .media-block p {
     margin: 0;
     flex: 1;
-    text-align: justify;
     line-height: 1.6;
   }
 
