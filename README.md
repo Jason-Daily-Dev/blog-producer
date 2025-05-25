@@ -65,3 +65,7 @@ blog-producer/
 ├── frontend/          # React frontend
 └── docker/           # Docker configuration
 ```
+
+## System Design
+
+![System Design](./system_design.png)
