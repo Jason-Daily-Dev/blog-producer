@@ -23,41 +23,56 @@ interface BlogContentModalProps {
   setBlogFormat: (format: string) => void;
 }
 
-const globalImageStyle = `
+const globalBlogStyle = `
   .blog-content {
-    max-width: 80%;
+    max-width: 900px;
     margin: 0 auto;
     padding: 0 20px;
   }
 
-  .blog-content .media-block {
+  .media-block {
     display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    margin-bottom: 24px;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px 0;
   }
 
-  .blog-content .media-block img {
-    width: 150px;
-    height: 150px;
+  .media-block:nth-of-type(even) {
+    flex-direction: row-reverse;
+  }
+
+  .media-block img {
+    width: 200 px;
+    height: 200 px;
     object-fit: cover;
     border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     flex-shrink: 0;
+    margin-right: 50px;
+    margin-left: 50px;
   }
 
-  .blog-content .media-block p {
+  .media-block p {
     margin: 0;
     flex: 1;
     text-align: justify;
+    line-height: 1.6;
   }
 
   .blog-content h1 {
     text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
   }
 
-  .blog-content p {
-    margin-bottom: 1rem;
+  @media (max-width: 640px) {
+    .media-block {
+      flex-direction: column !important;
+      align-items: center;
+    }
+
+    .media-block p {
+      text-align: justify;
+    }
   }
 `;
 
@@ -74,21 +89,8 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
   const [minimized, setMinimized] = useState(false);
   const [backgroundOpacity, setBackgroundOpacity] = useState(0.3);
   const [textColor, setTextColor] = useState('#333');
-  const [fontFamily, setFontFamily] = useState<string>('serif');
-  const [fontWeight, setFontWeight] = useState<number>(600);
-
-  const handleClose = () => setOpen(false);
-  const handleMinimize = () => setMinimized(!minimized);
-
-  const handleBackgroundOpacityChange = (e: Event, value: number | number[]) => {
-    if (typeof value === 'number') {
-      setBackgroundOpacity(value);
-    }
-  };
-
-  const handleTextColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTextColor(e.target.value);
-  };
+  const [fontFamily, setFontFamily] = useState('serif');
+  const [fontWeight, setFontWeight] = useState(600);
 
   const handleReset = () => {
     setOpen(false);
@@ -101,7 +103,7 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
   };
 
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={() => setOpen(false)}>
       <Box
         sx={{
           position: 'absolute',
@@ -109,13 +111,13 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
           left: '50%',
           transform: 'translate(-50%, -10%)',
           width: minimized ? '300px' : '80%',
-          height: minimized ? '50px' : '80%',
+          height: minimized ? '50px' : '90%',
           backgroundColor: 'white',
           borderRadius: '8px',
           boxShadow: 24,
-          overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
+          overflow: 'hidden',
         }}
       >
         {minimized ? (
@@ -127,12 +129,10 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
               justifyContent: 'space-between',
               alignItems: 'center',
               padding: '10px',
-              borderRadius: '8px',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
             }}
           >
             <Typography variant="body1">Generated Blog</Typography>
-            <IconButton onClick={handleMinimize}>
+            <IconButton onClick={() => setMinimized(false)}>
               <ExpandIcon />
             </IconButton>
           </Box>
@@ -150,7 +150,7 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
             >
               <Typography variant="h6">Generated Blog</Typography>
               <Box>
-                <IconButton onClick={handleMinimize}>
+                <IconButton onClick={() => setMinimized(true)}>
                   <MinimizeIcon />
                 </IconButton>
                 <IconButton onClick={handleReset}>
@@ -171,11 +171,12 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
                 gap: '10px',
               }}
             >
+              {/* Background Transparency */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Typography variant="body2">Background Transparency:</Typography>
                 <Slider
                   value={backgroundOpacity}
-                  onChange={handleBackgroundOpacityChange}
+                  onChange={(_, v) => typeof v === 'number' && setBackgroundOpacity(v)}
                   min={0}
                   max={1}
                   step={0.1}
@@ -183,17 +184,19 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
                 />
               </Box>
 
+              {/* Text Color */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Typography variant="body2">Text Color:</Typography>
                 <TextField
                   type="color"
                   value={textColor}
-                  onChange={handleTextColorChange}
+                  onChange={(e) => setTextColor(e.target.value)}
                   size="small"
                   sx={{ width: '50px', padding: 0 }}
                 />
               </Box>
 
+              {/* Font Family */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Typography variant="body2">Font Family:</Typography>
                 <TextField
@@ -203,12 +206,9 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
                   size="small"
                   sx={{
                     minWidth: '150px',
-                    fontFamily: fontFamily,
-                    borderRadius: '20px',
+                    fontFamily,
                     backgroundColor: '#f0f0f0',
-                    '& .MuiInputBase-root': {
-                      fontFamily: fontFamily,
-                    },
+                    '& .MuiInputBase-root': { fontFamily },
                   }}
                 >
                   <MenuItem value="serif">Serif</MenuItem>
@@ -220,6 +220,7 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
                 </TextField>
               </Box>
 
+              {/* Font Weight */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Typography variant="body2">Font Weight:</Typography>
                 <TextField
@@ -230,14 +231,15 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
                   size="small"
                 >
                   <option value={300}>300</option>
-                  <option value={400}>400 (Normal)</option>
+                  <option value={400}>400</option>
                   <option value={600}>600</option>
-                  <option value={700}>700 (Bold)</option>
+                  <option value={700}>700</option>
                   <option value={900}>900</option>
                 </TextField>
               </Box>
             </Box>
 
+            {/* Blog Content Area */}
             <Box
               sx={{
                 flex: 1,
@@ -249,18 +251,18 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 color: textColor,
-                fontFamily: fontFamily,
-                fontWeight: fontWeight,
+                fontFamily,
+                fontWeight,
               }}
             >
               {blogFormat === 'html' ? (
                 <div className="blog-content">
-                  <style>{globalImageStyle}</style>
+                  <style>{globalBlogStyle}</style>
                   <div dangerouslySetInnerHTML={{ __html: blogContent }} />
                 </div>
-                ) : (
-                  <pre>{blogContent}</pre>
-                )}
+              ) : (
+                <pre>{blogContent}</pre>
+              )}
             </Box>
           </>
         )}
