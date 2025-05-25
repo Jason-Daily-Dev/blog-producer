@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Modal, IconButton, Typography } from '@mui/material';
+import { Box, Modal, IconButton, Typography, Slider, TextField } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import ExpandIcon from '@mui/icons-material/Expand';
@@ -13,9 +13,21 @@ interface BlogContentModalProps {
 const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent, imageUrl, blogFormat }) => {
   const [open, setOpen] = useState(true);
   const [minimized, setMinimized] = useState(false);
+  const [backgroundOpacity, setBackgroundOpacity] = useState(0.7);
+  const [textColor, setTextColor] = useState('#333');
 
   const handleClose = () => setOpen(false);
   const handleMinimize = () => setMinimized(!minimized);
+
+  const handleBackgroundOpacityChange = (e: Event, value: number | number[]) => {
+    if (typeof value === 'number') {
+      setBackgroundOpacity(value);
+    }
+  };
+
+  const handleTextColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTextColor(e.target.value);
+  };
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -77,13 +89,47 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent, imageU
             </Box>
             <Box
               sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '10px',
+                backgroundColor: '#f9f9f9',
+                borderBottom: '1px solid #ddd',
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Typography variant="body2">Background Transparency:</Typography>
+                <Slider
+                  value={backgroundOpacity}
+                  onChange={handleBackgroundOpacityChange}
+                  min={0}
+                  max={1}
+                  step={0.1}
+                  sx={{ width: '150px' }}
+                />
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Typography variant="body2">Text Color:</Typography>
+                <TextField
+                  type="color"
+                  value={textColor}
+                  onChange={handleTextColorChange}
+                  size="small"
+                  sx={{ width: '50px', padding: 0 }}
+                />
+              </Box>
+            </Box>
+            <Box
+              sx={{
                 flex: 1,
-                padding: '20px',
+                padding: '20px 40px',
                 overflowY: 'auto',
-                backgroundImage: imageUrl ? `url(${imageUrl})` : undefined,
+                background: imageUrl
+                  ? `linear-gradient(rgba(255, 255, 255, ${1 - backgroundOpacity}), rgba(255, 255, 255, ${1 - backgroundOpacity})), url(${imageUrl})`
+                  : undefined, // Apply a single blended background
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                color: '#333',
+                color: textColor,
               }}
             >
               {blogFormat === 'html' ? (
