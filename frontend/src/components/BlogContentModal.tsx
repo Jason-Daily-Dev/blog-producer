@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Modal, IconButton, Typography, Slider, TextField } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import ExpandIcon from '@mui/icons-material/Expand';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface BlogContentModalProps {
   blogContent: string;
@@ -27,6 +27,13 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent, imageU
 
   const handleTextColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTextColor(e.target.value);
+  };
+
+  const handleReset = () => {
+    setOpen(false);
+    setMinimized(false);
+    setBackgroundOpacity(0.5);
+    setTextColor('#333');
   };
 
   return (
@@ -82,8 +89,8 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({ blogContent, imageU
                 <IconButton onClick={handleMinimize}>
                   <MinimizeIcon />
                 </IconButton>
-                <IconButton onClick={handleClose}>
-                  <CloseIcon />
+                <IconButton onClick={handleReset}>
+                  <DeleteIcon />
                 </IconButton>
               </Box>
             </Box>

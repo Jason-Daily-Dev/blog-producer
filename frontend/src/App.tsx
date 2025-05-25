@@ -19,11 +19,12 @@ function App() {
   const [blogContent, setBlogContent] = useState('');
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined); // State for background image URL
   const [blogFormat, setBlogFormat] = useState<string>('html'); // State for background image URL
-
+  const [open, setOpen] = useState(false); // State to control the modal open/close
 
   const handleSubmit = async () => {
     setLoading(true);
     setSuccess(false);
+    setOpen(false); // Close the modal before generating new content
     try {
       const token = await getAccessTokenSilently();
       const requestBody = {
@@ -45,11 +46,7 @@ function App() {
       setImageUrl(data.image_url || null); // Set the image URL from the response
       setBlogFormat(data.format || 'html'); // Set the blog format from the response
       setSuccess(true);
-
-      // Debugging logs
-      console.log('Blog Content:', data.content);
-      console.log('Image URL:', data.image_url);
-      console.log('Blog Format:', data.format);
+      setOpen(true); // Reopen the modal after generating new content
     } catch (error) {
       console.error('Error generating blog:', error);
     } finally {
@@ -119,6 +116,8 @@ function App() {
                 blogContent={blogContent}
                 imageUrl={imageUrl}
                 blogFormat={blogFormat}
+                open={open} // Pass the open state to the modal
+                setOpen={setOpen} // Pass the setOpen function to the modal
               />
             )}
           </Box>
