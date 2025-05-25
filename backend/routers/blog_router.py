@@ -39,13 +39,16 @@ async def generate_blog(
             background_image,
         ) = await blog_generator.generate_blog(content_prompt)
 
+        if not blog_content:
+            raise Exception("Failed to generate blog content.")
+
         return {
             "content": blog_content,
             "background_image": background_image,
             "format": relevant_style,
         }
 
-    except HTTPException as e:
-        raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(
+            status_code=500, detail=f"An unexpected error occurred: {str(e)}"
+        )
