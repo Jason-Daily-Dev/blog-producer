@@ -43,7 +43,7 @@ function App() {
 
       const data = await response.json();
       setBlogContent(data.content || '');
-      setImageUrl(data.image_url || null); // Set the image URL from the response
+      setImageUrl(data.background_image || null); // Set the image URL from the response
       setBlogFormat(data.format || 'html'); // Set the blog format from the response
       setSuccess(true);
       setOpen(true); // Reopen the modal after generating new content

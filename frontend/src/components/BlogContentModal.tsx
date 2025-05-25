@@ -6,11 +6,12 @@ import {
   Typography,
   Slider,
   TextField,
+  MenuItem,
 } from '@mui/material';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import ExpandIcon from '@mui/icons-material/Expand';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { MenuItem } from '@mui/material';
+
 interface BlogContentModalProps {
   blogContent: string;
   imageUrl?: string;
@@ -21,6 +22,44 @@ interface BlogContentModalProps {
   setImageUrl: (url: string | undefined) => void;
   setBlogFormat: (format: string) => void;
 }
+
+const globalImageStyle = `
+  .blog-content {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .blog-content .media-block {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+
+  .blog-content .media-block img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .blog-content .media-block p {
+    margin: 0;
+    flex: 1;
+    text-align: justify;
+  }
+
+  .blog-content h1 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .blog-content p {
+    margin-bottom: 1rem;
+  }
+`;
 
 const BlogContentModal: React.FC<BlogContentModalProps> = ({
   blogContent,
@@ -60,8 +99,6 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
     setImageUrl(undefined);
     setBlogFormat('html');
   };
-
-  const sanitizedBlogContent = blogContent.replace(/<img[^>]*>/g, '');
 
   return (
     <Modal open={open} onClose={handleClose}>
@@ -217,10 +254,13 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
               }}
             >
               {blogFormat === 'html' ? (
-                <div dangerouslySetInnerHTML={{ __html: sanitizedBlogContent }} />
-              ) : (
-                <pre>{sanitizedBlogContent}</pre>
-              )}
+                <div className="blog-content">
+                  <style>{globalImageStyle}</style>
+                  <div dangerouslySetInnerHTML={{ __html: blogContent }} />
+                </div>
+                ) : (
+                  <pre>{blogContent}</pre>
+                )}
             </Box>
           </>
         )}
