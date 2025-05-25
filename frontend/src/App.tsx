@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Title from './components/Title';
 import BlogPrompt from './components/BlogPrompt';
 import GenerateBlogButton from './components/GenerateBlogButton';
-import BlogContent from './components/BlogContent';
+import BlogContentModal from './components/BlogContentModal';
 import { usePrompt } from './context/PromptContext';
 import { useAuth0 } from '@auth0/auth0-react';
 import TopRightUserInfo from './components/TopRightUserInfo';
@@ -45,6 +45,11 @@ function App() {
       setImageUrl(data.image_url || null); // Set the image URL from the response
       setBlogFormat(data.format || 'html'); // Set the blog format from the response
       setSuccess(true);
+
+      // Debugging logs
+      console.log('Blog Content:', data.content);
+      console.log('Image URL:', data.image_url);
+      console.log('Blog Format:', data.format);
     } catch (error) {
       console.error('Error generating blog:', error);
     } finally {
@@ -110,7 +115,7 @@ function App() {
               <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} />
             </Box>
             {blogContent && (
-              <BlogContent
+              <BlogContentModal
                 blogContent={blogContent}
                 imageUrl={imageUrl}
                 blogFormat={blogFormat}
