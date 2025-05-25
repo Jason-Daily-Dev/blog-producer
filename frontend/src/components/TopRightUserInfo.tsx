@@ -34,7 +34,7 @@ const TopRightUserInfo: React.FC = () => {
       <Button
         variant="contained"
         size="small"
-        onClick={() => logout({ returnTo: window.location.origin })}
+        onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
         sx={{
           textTransform: 'none',
           fontWeight: 'bold',
