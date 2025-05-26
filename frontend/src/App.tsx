@@ -41,6 +41,10 @@ function App() {
         body: JSON.stringify(requestBody),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       setBlogContent(data.content || '');
       setImageUrl(data.background_image || null); // Set the image URL from the response
