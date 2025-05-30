@@ -14,7 +14,6 @@ auth = get_auth()
 
 class BlogRequest(BaseModel):
     content_prompt: str
-    style: str = "html"  # "html" is the default format
 
 
 router = APIRouter(tags=["blog"], dependencies=[Depends(auth.implicit_scheme)])
