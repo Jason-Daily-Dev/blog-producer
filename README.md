@@ -57,6 +57,30 @@ A full-stack blog drafting application that uses OpenAI's API to generate blog c
    docker-compose up --build
    ```
 
+### Build and Push Backend Docker Image (amd64)
+
+To build and push the backend Docker image for amd64 architecture:
+
+1. Authenticate with Docker Hub (if not already):
+   ```bash
+   docker login
+   ```
+2. Build the image for amd64:
+   ```bash
+   docker buildx build --platform linux/amd64 -t <your-dockerhub-username>/<your-repo>:<tag> -f docker/Dockerfile.backend .
+   ```
+3. (Optional) Push the image to Docker Hub:
+   ```bash
+   docker push <your-dockerhub-username>/<your-repo>:<tag>
+   ```
+
+Or, to build and push in one step:
+   ```bash
+   docker buildx build --platform linux/amd64 -t <your-dockerhub-username>/<your-repo>:<tag> -f docker/Dockerfile.backend . --push
+   ```
+
+Replace `<your-dockerhub-username>`, `<your-repo>`, and `<tag>` as needed.
+
 ## Project Structure
 
 ```
