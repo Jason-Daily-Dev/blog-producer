@@ -1,15 +1,16 @@
-# Ignore node_modules
+# Ignore secrets and config
+.env
+*.env
+**/*.env
+
+# Git files
+.git
+.gitignore
+
+# Node + Python caches
 node_modules
-
-# Ignore Python cache
 __pycache__
-*.pyc
 
-# Ignore environment files
-backend/.env
-
-# Ignore macOS files
-.DS_Store
-
-# Ignore logs
-*.log
+# Build artifacts
+dist
+build
