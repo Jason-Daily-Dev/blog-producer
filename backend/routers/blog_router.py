@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, HTTPException, Security
 from fastapi_auth0 import Auth0User
 from pydantic import BaseModel
+from typing import List, Optional
 
 # Load environment variables
 load_dotenv()
@@ -14,6 +15,7 @@ auth = get_auth()
 
 class BlogRequest(BaseModel):
     content_prompt: str
+    languages: Optional[List[str]] = ["english"]  # Default to English only
 
 
 router = APIRouter(tags=["blog"], dependencies=[Depends(auth.implicit_scheme)])
@@ -27,24 +29,26 @@ async def generate_blog(
     try:
         # Extract fields from the request
         content_prompt = request.content_prompt
+        languages = request.languages or ["english"]
 
         # Initialize BlogGenerator
         blog_generator = BlogGenerator()
 
         # Generate blog content
         (
-            blog_content,
-            relevant_style,
+            content_dict,
+            content_format,
             background_image,
-        ) = await blog_generator.generate_blog(content_prompt)
+        ) = await blog_generator.generate_blog(content_prompt, languages)
 
-        if not blog_content:
+        if not content_dict:
             raise Exception("Failed to generate blog content.")
 
         return {
-            "content": blog_content,
+            "content": content_dict,
             "background_image": background_image,
-            "format": relevant_style,
+            "format": content_format,
+            "languages": languages,
         }
 
     except Exception as e:

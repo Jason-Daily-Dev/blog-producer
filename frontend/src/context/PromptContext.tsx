@@ -3,17 +3,23 @@ import React, { createContext, useContext, useState } from "react";
 interface PromptContextProps {
   contentPrompt: string;
   setContentPrompt: (value: string) => void;
-  imagePrompt: string;
-  setImagePrompt: (value: string) => void;
+  selectedLanguages: string[];
+  setSelectedLanguages: (value: string[]) => void;
 }
 
 const PromptContext = createContext<PromptContextProps | undefined>(undefined);
 
 export const PromptProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [contentPrompt, setContentPrompt] = useState("");
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(["english"]);
 
   return (
-    <PromptContext.Provider value={{ contentPrompt, setContentPrompt }}>
+    <PromptContext.Provider value={{ 
+      contentPrompt, 
+      setContentPrompt,
+      selectedLanguages,
+      setSelectedLanguages
+    }}>
       {children}
     </PromptContext.Provider>
   );

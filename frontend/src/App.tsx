@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Title from './components/Title';
 import BlogPrompt from './components/BlogPrompt';
+import LanguageSelector from './components/LanguageSelector';
 import GenerateBlogButton from './components/GenerateBlogButton';
 import BlogContentModal from './components/BlogContentModal';
 import { usePrompt } from './context/PromptContext';
@@ -11,14 +12,14 @@ import { Box, Button, Typography, Container } from '@mui/material';
 import AppBackground from './components/AppBackground';
 
 function App() {
-  const { contentPrompt } = usePrompt();
+  const { contentPrompt, selectedLanguages } = usePrompt();
   const { loginWithRedirect, logout, getAccessTokenSilently, user, isAuthenticated } = useAuth0();
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [blogContent, setBlogContent] = useState('');
+  const [blogContent, setBlogContent] = useState<{[key: string]: string}>({});
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined); // State for background image URL
-  const [blogFormat, setBlogFormat] = useState<string>('html'); // State for background image URL
+  const [blogFormat, setBlogFormat] = useState<string>('html'); // State for blog format
   const [open, setOpen] = useState(false); // State to control the modal open/close
 
   const handleSubmit = async () => {
@@ -29,7 +30,7 @@ function App() {
       const token = await getAccessTokenSilently();
       const requestBody = {
         content_prompt: contentPrompt,
-        style: "html", // Specify the format as "html"
+        languages: selectedLanguages,
       };
 
       const response = await fetch('/api/generate-blog', {
@@ -46,7 +47,7 @@ function App() {
       }
 
       const data = await response.json();
-      setBlogContent(data.content || '');
+      setBlogContent(data.content || {});
       setImageUrl(data.background_image || null); // Set the image URL from the response
       setBlogFormat(data.format || 'html'); // Set the blog format from the response
       setSuccess(true);
@@ -112,10 +113,11 @@ function App() {
                 gap: '20px',
               }}
             >
+              <LanguageSelector />
               <BlogPrompt />
               <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} />
             </Box>
-            {blogContent && (
+            {Object.keys(blogContent).length > 0 && (
               <BlogContentModal
                 blogContent={blogContent}
                 imageUrl={imageUrl}

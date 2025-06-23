@@ -13,10 +13,10 @@ import ExpandIcon from '@mui/icons-material/Expand';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 interface BlogContentModalProps {
-  blogContent: string;
+  blogContent: {[key: string]: string};
   imageUrl?: string;
   blogFormat: string;
-  setBlogContent: (content: string) => void;
+  setBlogContent: (content: {[key: string]: string}) => void;
   open: boolean;
   setOpen: (open: boolean) => void;
   setImageUrl: (url: string | undefined) => void;
@@ -90,15 +90,24 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
   const [textColor, setTextColor] = useState('#333');
   const [fontFamily, setFontFamily] = useState('serif');
   const [fontWeight, setFontWeight] = useState(600);
+  const [currentLanguage, setCurrentLanguage] = useState<string>('');
+
+  React.useEffect(() => {
+    const languages = Object.keys(blogContent);
+    if (languages.length > 0 && !currentLanguage) {
+      setCurrentLanguage(languages[0]);
+    }
+  }, [blogContent, currentLanguage]);
 
   const handleReset = () => {
     setOpen(false);
     setMinimized(false);
     setBackgroundOpacity(0.5);
     setTextColor('#333');
-    setBlogContent('');
+    setBlogContent({});
     setImageUrl(undefined);
     setBlogFormat('html');
+    setCurrentLanguage('');
   };
 
   return (
@@ -236,6 +245,28 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
                   <option value={900}>900</option>
                 </TextField>
               </Box>
+
+              {/* Language Selection */}
+              {Object.keys(blogContent).length > 1 && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Typography variant="body2">Language:</Typography>
+                  <TextField
+                    select
+                    value={currentLanguage}
+                    onChange={(e) => setCurrentLanguage(e.target.value)}
+                    size="small"
+                    sx={{ minWidth: '180px' }}
+                  >
+                    {Object.keys(blogContent).map((lang) => (
+                      <MenuItem key={lang} value={lang}>
+                        {lang === 'english' ? 'English' : 
+                         lang === 'simplified_chinese' ? '简体中文' :
+                         lang === 'traditional_chinese' ? '繁體中文' : lang}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Box>
+              )}
             </Box>
 
             {/* Blog Content Area */}
@@ -254,13 +285,19 @@ const BlogContentModal: React.FC<BlogContentModalProps> = ({
                 fontWeight,
               }}
             >
-              {blogFormat === 'html' ? (
-                <div className="blog-content">
-                  <style>{globalBlogStyle}</style>
-                  <div dangerouslySetInnerHTML={{ __html: blogContent }} />
-                </div>
+              {currentLanguage && blogContent[currentLanguage] ? (
+                blogFormat === 'html' ? (
+                  <div className="blog-content">
+                    <style>{globalBlogStyle}</style>
+                    <div dangerouslySetInnerHTML={{ __html: blogContent[currentLanguage] }} />
+                  </div>
+                ) : (
+                  <pre>{blogContent[currentLanguage]}</pre>
+                )
               ) : (
-                <pre>{blogContent}</pre>
+                <Typography variant="body1" sx={{ textAlign: 'center', mt: 4 }}>
+                  No content available for selected language
+                </Typography>
               )}
             </Box>
           </>
