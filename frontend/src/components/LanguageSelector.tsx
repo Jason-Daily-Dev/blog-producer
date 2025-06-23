@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 
 const LANGUAGE_OPTIONS = [
-  { value: "english", label: "English" },
+  { value: "english", label: "ENGLISH" },
   { value: "simplified_chinese", label: "简体中文" },
   { value: "traditional_chinese", label: "繁體中文" },
 ];
@@ -38,46 +38,53 @@ const LanguageSelector: React.FC = () => {
     >
       <Box
         sx={{
-          width: "80%",
+          width: "90%",
           maxWidth: "600px",
-          padding: "15px",
-          backgroundColor: "#FFF3E0",
-          color: "#E65100",
-          border: "1px solid #E65100",
-          borderRadius: "8px",
-          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          padding: "20px",
+          backgroundColor: "rgba(255, 255, 255, 0.6)",
+          borderRadius: "10px",
+          border: "1px solid #ccc",
+          boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+          backdropFilter: "blur(4px)",
+          textAlign: "center",
         }}
       >
-        <Typography variant="h6" gutterBottom>
+        <Typography
+          variant="subtitle1"
+          sx={{ color: "#00796B", fontWeight: 600, marginBottom: "10px" }}
+        >
           Language Selection:
         </Typography>
-        
+
         <ToggleButtonGroup
           value={selectedLanguages}
           onChange={handleLanguageChange}
-          aria-label="language selection"
-          sx={{ 
-            display: 'flex', 
-            flexWrap: 'wrap', 
-            gap: '8px',
-            '& .MuiToggleButton-root': {
-              border: '2px solid #E65100',
-              borderRadius: '20px',
-              padding: '8px 16px',
-              color: '#E65100',
-              backgroundColor: 'transparent',
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            gap: "10px",
+            "& .MuiToggleButton-root": {
+              borderRadius: "20px",
+              padding: "8px 20px",
+              fontWeight: "bold",
+              fontSize: "14px",
+              border: "1px solid #00796B",
+              color: "#00796B",
+              backgroundColor: "transparent",
               '&.Mui-selected': {
-                backgroundColor: '#E65100',
-                color: 'white',
+                backgroundColor: "#00796B",
+                color: "#FFF",
                 '&:hover': {
-                  backgroundColor: '#D84315',
+                  backgroundColor: "#004D40",
                 },
               },
               '&:hover': {
-                backgroundColor: '#FFF3E0',
+                backgroundColor: "#E0F2F1",
               },
-            }
+            },
           }}
+          aria-label="language"
         >
           {LANGUAGE_OPTIONS.map((option) => (
             <ToggleButton key={option.value} value={option.value}>
