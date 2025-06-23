@@ -10,32 +10,49 @@ class PhotoSearcher:
     def __init__(self):
         self.unsplash_access_key = os.getenv("UNSPLASH_ACCESS_KEY")
         if not self.unsplash_access_key:
-            raise ValueError("Unsplash Access Key is not set in environment variables.")
+            raise ValueError("UNSPLASH_ACCESS_KEY is not set in environment variables.")
+
+        self.pexels_api_key = os.getenv("PEXELS_API_KEY")
+        if not self.pexels_api_key:
+            raise ValueError("PEXELS_API_KEY is not set in environment variables.")
 
     def search_photos(self, query: str, count: int = 4) -> list[str]:
         """
-        Search Unsplash for multiple photos related to a query.
-
-        Args:
-            query (str): Search keyword.
-            count (int): Number of photo URLs to return.
-
-        Returns:
-            list[str]: List of image URLs.
+        Search Pexels first, then Unsplash if needed.
         """
-        url = "https://api.unsplash.com/search/photos"
-        headers = {"Authorization": f"Client-ID {self.unsplash_access_key}"}
-        params = {"query": query, "per_page": count}
+        images = []
 
-        response = requests.get(url, headers=headers, params=params)
-        if response.status_code == 200:
-            data = response.json()
-            results = data.get("results", [])
-            return [item["urls"]["regular"] for item in results[:count]]
-        else:
-            raise Exception(
-                f"Unsplash API error: {response.status_code} - {response.text}"
-            )
+        # Try Pexels first
+        try:
+            pexels_url = "https://api.pexels.com/v1/search"
+            headers = {"Authorization": self.pexels_api_key}
+            params = {"query": query, "per_page": count}
+            response = requests.get(pexels_url, headers=headers, params=params)
+
+            if response.status_code == 200:
+                data = response.json()
+                photos = data.get("photos", [])
+                images += [photo["src"]["medium"] for photo in photos]
+        except Exception as e:
+            print(f"Pexels error: {e}")
+
+        # If not enough images, try Unsplash
+        if len(images) < count:
+            try:
+                unsplash_url = "https://api.unsplash.com/search/photos"
+                headers = {"Authorization": f"Client-ID {self.unsplash_access_key}"}
+                params = {"query": query, "per_page": count}
+                response = requests.get(unsplash_url, headers=headers, params=params)
+
+                if response.status_code == 200:
+                    data = response.json()
+                    remaining = count - len(images)
+                    results = data.get("results", [])
+                    images += [item["urls"]["regular"] for item in results[:remaining]]
+            except Exception as e:
+                print(f"Unsplash error: {e}")
+
+        return images[:count]
 
 
 # For testing only

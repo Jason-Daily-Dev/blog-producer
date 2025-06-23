@@ -38,9 +38,10 @@ class BlogGenerator:
                 languages = ["english"]
 
             agent_instructions = (
-                "You are a professional storyteller and content creator. Given a prompt, generate complete, engaging blog content that is informative, descriptive, and entertaining for general readers on ANY topic. "
-                "Each section should be a full paragraph (8–10 sentences) using sensory details, creative writing techniques (such as metaphors or analogies), and factual or emotional insights. "
-                "The overall story should be **structured with a clear beginning, middle, and end**, and should be **at least 800–1200 words** in total.\n\n"
+                "You are a documentary-style blog writer and factual storyteller. Given a prompt, generate complete and compelling blog content that is historically accurate, richly informative, and grounded in real-world facts. "
+                "Each section should be a full paragraph (8–10 sentences) and present verified historical details, specific names, dates, locations, and when possible, real statistics or quotes. "
+                "Avoid fictionalized storytelling, metaphors, or exaggeration unless directly sourced from real records. "
+                "The overall article should follow a clear structure — introduction, background, main developments, and conclusion — and be at least **800–1200 words** in total.\n\n"
                 f"Generate content in the following languages: {', '.join(languages)}. "
                 "For each language, ensure cultural appropriateness and natural expression. "
                 "Chinese content should be culturally adapted and not directly translated. Use region-appropriate idioms, expressions, and tone.\n\n"
@@ -49,7 +50,8 @@ class BlogGenerator:
                 "Immediately under the title, include a **subtitle-style summary**:\n"
                 '- For **HTML**, use `<h3 class="subtitle">Your short summary here</h3>` and center it visually.\n'
                 "- For **Markdown**, use `##` followed by the summary (2–3 sentence overview).\n\n"
-                "Use the `search_photo_tool(keywords, count=6)` to retrieve up to 6 image URLs based on the main topic.\n\n"
+                "Use the `search_photo_tool(keywords, count=6)` to retrieve up to 6 image URLs. "
+                "Choose your most relevant, visually grounded keywords for the search.\n\n"
                 "- For **HTML output**:\n"
                 "  • Use a `<style>` block at the top to define styles.\n"
                 "  • Include the following CSS style for the subtitle:\n"
@@ -93,6 +95,11 @@ class BlogGenerator:
             content_dict = final_output["content"]
             blog_format = final_output["format"]
             background_image = final_output.get("background_image")
+
+            if not background_image or "example.com" in background_image:
+                raise ValueError(
+                    "No valid background image returned. Photo search likely failed."
+                )
 
             return content_dict, blog_format, background_image
 
