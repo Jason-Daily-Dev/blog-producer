@@ -67,9 +67,10 @@ class BlogGenerator:
                 "The output must be a clean string representing a Python dictionary exactly in the format below:\n\n"
                 "{\n"
                 "  'content': {\n"
-                "    'english': '...html or markdown content including title and subtitle...',\n"
-                "    'simplified_chinese': '...html or markdown content including title and subtitle...',\n"
-                "    'traditional_chinese': '...html or markdown content including title and subtitle...'\n"
+                "    '<language>': '...html or markdown content including title and subtitle...'\n"
+                "    // one entry for each language in the passed list: "
+                + ", ".join(languages)
+                + "\n"
                 "  },\n"
                 "  'format': 'html' or 'markdown',\n"
                 "  'background_image': 'https://example.com/image.jpg'\n"
