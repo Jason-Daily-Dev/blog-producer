@@ -1,20 +1,14 @@
-import os
-
 import requests
-from dotenv import load_dotenv
-
-load_dotenv()
 
 
 class PhotoSearcher:
-    def __init__(self):
-        self.unsplash_access_key = os.getenv("UNSPLASH_ACCESS_KEY")
-        if not self.unsplash_access_key:
-            raise ValueError("UNSPLASH_ACCESS_KEY is not set in environment variables.")
-
-        self.pexels_api_key = os.getenv("PEXELS_API_KEY")
-        if not self.pexels_api_key:
-            raise ValueError("PEXELS_API_KEY is not set in environment variables.")
+    def __init__(self, pexels_api_key: str, unsplash_access_key: str):
+        if not pexels_api_key:
+            raise ValueError("PEXELS_API_KEY is not configured.")
+        if not unsplash_access_key:
+            raise ValueError("UNSPLASH_ACCESS_KEY is not configured.")
+        self.pexels_api_key = pexels_api_key
+        self.unsplash_access_key = unsplash_access_key
 
     def search_photos(self, query: str, count: int = 4) -> list[str]:
         """
@@ -51,18 +45,4 @@ class PhotoSearcher:
                     images += [item["urls"]["regular"] for item in results[:remaining]]
             except Exception as e:
                 print(f"Unsplash error: {e}")
-
         return images[:count]
-
-
-# For testing only
-if __name__ == "__main__":
-    photo_searcher = PhotoSearcher()
-    query = "nature"
-    photo_urls = photo_searcher.search_photos(query, count=4)
-    if photo_urls:
-        print("Photo URLs:")
-        for url in photo_urls:
-            print(url)
-    else:
-        print("No photos found.")

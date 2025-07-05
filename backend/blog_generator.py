@@ -1,34 +1,15 @@
 import ast
-import os
 
 import openai
 from agents import Agent, Runner, function_tool
-from dotenv import load_dotenv
 from search_photo import PhotoSearcher
-
-load_dotenv()
-
-
-@function_tool
-def search_photo_tool(keywords: str, count: int = 4) -> list[str]:
-    """
-    Search for the most relevant photos based on the given keywords.
-
-    Args:
-        keywords (str): Keywords to search for the photos.
-        count (int): Number of photos to return (default is 4).
-
-    Returns:
-        list[str]: List of image URLs.
-    """
-    photo_searcher = PhotoSearcher()
-    return photo_searcher.search_photos(keywords, count)
 
 
 class BlogGenerator:
-    def __init__(self):
-        self.openai_api_key = os.getenv("OPENAI_API_KEY")
+    def __init__(self, openai_api_key: str, photo_searcher: PhotoSearcher):
+        self.openai_api_key = openai_api_key
         openai.api_key = self.openai_api_key
+        self.photo_searcher = photo_searcher
 
     async def generate_blog(
         self, prompt: str, languages: list[str] = None
@@ -36,6 +17,14 @@ class BlogGenerator:
         try:
             if languages is None:
                 languages = ["english"]
+
+            @function_tool
+            def search_photo_tool(keywords: str, count: int = 4) -> list[str]:
+                """
+                Search for the most relevant photos based on the given keywords.
+                This tool uses the already initialized PhotoSearcher instance.
+                """
+                return self.photo_searcher.search_photos(keywords, count)
 
             language_list_str = ", ".join(f"'{lang}'" for lang in languages)
 
