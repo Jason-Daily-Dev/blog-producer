@@ -8,7 +8,7 @@ import BlogContentModal from './components/BlogContentModal';
 import { usePrompt } from './context/PromptContext';
 import { useAuth0 } from '@auth0/auth0-react';
 import TopRightUserInfo from './components/TopRightUserInfo';
-import { Box, Button, Typography, Container } from '@mui/material';
+import { Box, Button, Typography, Container, Alert } from '@mui/material';
 import AppBackground from './components/AppBackground';
 
 function App() {
@@ -21,10 +21,12 @@ function App() {
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined); // State for background image URL
   const [blogFormat, setBlogFormat] = useState<string>('html'); // State for blog format
   const [open, setOpen] = useState(false); // State to control the modal open/close
+  const [error, setError] = useState<string | null>(null); // State for error messages
 
   const handleSubmit = async () => {
     setLoading(true);
     setSuccess(false);
+    setError(null); // Reset error on new submission
     setOpen(false); // Close the modal before generating new content
     try {
       const token = await getAccessTokenSilently();
@@ -43,7 +45,15 @@ function App() {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // If the token is invalid or expired, Auth0 will return 401 or 403
+        if (response.status === 401 || response.status === 403) {
+          console.error("Authentication error. Logging out.");
+          logout({ logoutParams: { returnTo: window.location.origin } });
+        } else {
+          const errorData = await response.json();
+          const errorMessage = errorData.detail || `HTTP error! status: ${response.status}`;
+          throw new Error(errorMessage);
+        }
       }
 
       const data = await response.json();
@@ -53,6 +63,7 @@ function App() {
       setSuccess(true);
       setOpen(true); // Reopen the modal after generating new content
     } catch (error) {
+      setError(error instanceof Error ? error.message : 'An unknown error occurred.');
       console.error('Error generating blog:', error);
     } finally {
       setLoading(false);
@@ -116,6 +127,9 @@ function App() {
               <LanguageSelector />
               <BlogPrompt />
               <GenerateBlogButton loading={loading} handleSubmit={handleSubmit} />
+              {error && (
+                <Alert severity="error" sx={{ mt: 2, width: '80%', maxWidth: '600px' }}>{error}</Alert>
+              )}
             </Box>
             {Object.keys(blogContent).length > 0 && (
               <BlogContentModal

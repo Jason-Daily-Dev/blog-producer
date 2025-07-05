@@ -1,16 +1,12 @@
 import logging
 from typing import List, Optional
 
-from auth.auth import get_auth
+from auth.auth import require_scope, verify_token
 from blog_generator import BlogGenerator
 from config import Settings, get_settings
-from fastapi import APIRouter, Depends, HTTPException, Security
-from fastapi_auth0 import Auth0User
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from search_photo import PhotoSearcher
-
-# Get Auth0 instance
-auth = get_auth()
 
 
 class BlogRequest(BaseModel):
@@ -36,14 +32,14 @@ def get_blog_generator(
     )
 
 
-router = APIRouter(tags=["blog"], dependencies=[Depends(auth.implicit_scheme)])
+router = APIRouter(tags=["blog"], dependencies=[Depends(verify_token)])
 
 
 @router.post("/generate-blog")
 async def generate_blog(
     request: BlogRequest,
-    user: Auth0User = Security(auth.get_user, scopes=["write:blog"]),
     blog_generator: BlogGenerator = Depends(get_blog_generator),
+    _=Depends(require_scope("write:blog")),
 ):
     try:
         # If the languages list is not provided or is empty, default to English.

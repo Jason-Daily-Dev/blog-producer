@@ -1,37 +1,18 @@
-import httpx
-import jwt
-from auth.auth import get_auth
-from fastapi import APIRouter, Depends, HTTPException, Request
+from auth.auth import verify_token
+from fastapi import APIRouter, Depends
 
-auth = get_auth()
-
-router = APIRouter(tags=["auth"], dependencies=[Depends(auth.implicit_scheme)])
+router = APIRouter(tags=["auth"])
 
 
 @router.get("/me")
-async def me(request: Request):
-    # Extract token from the Authorization header
-    authorization_header = request.headers.get("authorization")
-    if not authorization_header or not authorization_header.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid or missing token")
-
-    token = authorization_header[len("Bearer ") :]
-
-    # Decode the token to extract permissions
-    try:
-        decoded_token = jwt.decode(token, options={"verify_signature": False})
-        permissions = decoded_token.get("permissions", [])
-    except jwt.exceptions.PyJWTError as e:
-        raise HTTPException(status_code=400, detail=f"Invalid token: {str(e)}")
-
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(
-            f"https://{auth.domain}/userinfo",
-            headers={"Authorization": f"Bearer {token}"},
-        )
-        userinfo = resp.json()
-
+async def me(claims: dict = Depends(verify_token)):
+    """
+    Returns essential user information from the validated access token.
+    This endpoint is protected and requires a valid token.
+    """
+    # Return a curated subset of claims for security and clarity
     return {
-        "userinfo": userinfo,
-        "permissions": permissions,
+        "user_id": claims.get("sub"),  # The user's unique identifier
+        "permissions": claims.get("permissions", []),
+        # You can add other necessary claims here, e.g., email if it's present
     }
