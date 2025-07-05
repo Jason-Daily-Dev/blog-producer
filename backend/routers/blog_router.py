@@ -1,10 +1,12 @@
+import logging
+from typing import List, Optional
+
 from auth.auth import get_auth
 from blog_generator import BlogGenerator
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, HTTPException, Security
 from fastapi_auth0 import Auth0User
 from pydantic import BaseModel
-from typing import List, Optional
 
 # Load environment variables
 load_dotenv()
@@ -27,9 +29,15 @@ async def generate_blog(
     user: Auth0User = Security(auth.get_user, scopes=["write:blog"]),
 ):
     try:
-        # Extract fields from the request
-        content_prompt = request.content_prompt
-        languages = request.languages or ["english"]
+        # If the languages list is not provided or is empty, default to English.
+        # This logic is more explicit and prevents bugs where an empty list is passed.
+        languages = request.languages
+        if not languages:
+            languages = ["english"]
+
+        # Add logging to help you debug which languages are being processed.
+        # You can check your server logs for this output.
+        logging.info(f"Request to generate blog for languages: {languages}")
 
         # Initialize BlogGenerator
         blog_generator = BlogGenerator()
@@ -39,7 +47,7 @@ async def generate_blog(
             content_dict,
             content_format,
             background_image,
-        ) = await blog_generator.generate_blog(content_prompt, languages)
+        ) = await blog_generator.generate_blog(request.content_prompt, languages)
 
         if not content_dict:
             raise Exception("Failed to generate blog content.")

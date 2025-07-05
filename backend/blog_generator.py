@@ -37,13 +37,15 @@ class BlogGenerator:
             if languages is None:
                 languages = ["english"]
 
+            language_list_str = ", ".join(f"'{lang}'" for lang in languages)
+
             agent_instructions = (
                 "You are a documentary-style blog writer and factual storyteller. Given a prompt, generate complete and compelling blog content that is historically accurate, richly informative, and grounded in real-world facts. "
                 "Each section should be a full paragraph (8–10 sentences) and present verified historical details, specific names, dates, locations, and when possible, real statistics or quotes. "
                 "Avoid fictionalized storytelling, metaphors, or exaggeration unless directly sourced from real records. "
                 "The overall article should follow a clear structure — introduction, background, main developments, and conclusion — and be at least **800–1200 words** in total.\n\n"
-                f"Generate content in the following languages: {', '.join(languages)}. "
-                "For each language, ensure cultural appropriateness and natural expression. "
+                "### CRITICAL: Multi-Language Generation\n"
+                f"You MUST generate content for ALL of the following languages: **{language_list_str}**. The user's prompt language does NOT change this. Your final output MUST include a version for each language requested.\n"
                 "Chinese content should be culturally adapted and not directly translated. Use region-appropriate idioms, expressions, and tone.\n\n"
                 "If the prompt mentions 'markdown', generate the content in **Markdown** format. Otherwise, use **HTML** format.\n\n"
                 "Start each blog post with a compelling title — formatted appropriately (`<h1>` for HTML, `#` for Markdown).\n\n"
@@ -67,9 +69,8 @@ class BlogGenerator:
                 "The output must be a clean string representing a Python dictionary exactly in the format below:\n\n"
                 "{\n"
                 "  'content': {\n"
-                "    '<language>': '...html or markdown content including title and subtitle...'\n"
-                "    // one entry for each language in the passed list: "
-                + ", ".join(languages)
+                "    // REQUIRED: One key for each language requested. For this request, the keys must be: "
+                + language_list_str
                 + "\n"
                 "  },\n"
                 "  'format': 'html' or 'markdown',\n"
