@@ -16,5 +16,8 @@ class Settings(BaseSettings):
 
 
 @functools.lru_cache()
-def get_settings():
-    return Settings()
+def get_settings() -> Settings:
+    # Pylance may report a false positive here because it doesn't understand
+    # that Pydantic's BaseSettings populates fields from environment variables.
+    # The # type: ignore comment is the idiomatic way to handle this.
+    return Settings()  # type: ignore [call-arg]

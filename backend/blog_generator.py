@@ -12,7 +12,7 @@ class BlogGenerator:
         self.photo_searcher = photo_searcher
 
     async def generate_blog(
-        self, prompt: str, languages: list[str] = None
+        self, prompt: str, languages: list[str]
     ) -> tuple[dict, str, str | None]:
         try:
             if languages is None:

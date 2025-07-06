@@ -1,8 +1,10 @@
+from typing import Annotated, Any, Dict, List
+
 import requests
 from config import get_settings
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2AuthorizationCodeBearer
-from jose import JWTError, jwt
+from jose import JWTError, exceptions, jwt
 
 settings = get_settings()
 
@@ -19,17 +21,34 @@ oauth2_scheme = OAuth2AuthorizationCodeBearer(
     },
 )
 
+
 # Fetch the JWKS from Auth0, which contains the public keys to verify JWTs
-jwks_url = f"https://{settings.AUTH0_DOMAIN}/.well-known/jwks.json"
-jwks = requests.get(jwks_url).json()
+def _get_jwks() -> Dict[str, List[Dict[str, Any]]]:
+    """
+    Fetches the JSON Web Key Set (JWKS) from the Auth0 domain.
+    This is a blocking call made once at startup, with error handling.
+    """
+    jwks_url = f"https://{settings.AUTH0_DOMAIN}/.well-known/jwks.json"
+    try:
+        response = requests.get(jwks_url, timeout=10)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        jwks_data = response.json()
+        if not isinstance(jwks_data, dict) or "keys" not in jwks_data:
+            raise ValueError("Invalid JWKS format received.")
+        return jwks_data
+    except (requests.RequestException, ValueError) as e:
+        raise RuntimeError(f"Could not fetch or parse JWKS from {jwks_url}: {e}") from e
+
+
+jwks = _get_jwks()
 
 
 class AuthError(HTTPException):
-    def __init__(self, error: dict, status_code: int):
+    def __init__(self, error: Dict[str, str], status_code: int):
         super().__init__(status_code=status_code, detail=error)
 
 
-def verify_token(token: str = Depends(oauth2_scheme)) -> dict:
+def verify_token(token: Annotated[str, Depends(oauth2_scheme)]) -> Dict[str, Any]:
     """
     Validates the JWT token.
     This is the primary dependency for protected endpoints.
@@ -73,12 +92,12 @@ def verify_token(token: str = Depends(oauth2_scheme)) -> dict:
             issuer=f"https://{settings.AUTH0_DOMAIN}/",
         )
         return payload
-    except jwt.ExpiredSignatureError:
+    except exceptions.ExpiredSignatureError:
         raise AuthError(
             {"code": "token_expired", "description": "Token is expired."},
             status.HTTP_401_UNAUTHORIZED,
         )
-    except jwt.JWTClaimsError:
+    except exceptions.JWTClaimsError:
         raise AuthError(
             {
                 "code": "invalid_claims",
@@ -101,7 +120,7 @@ def require_scope(required_scope: str):
     Returns a dependency that checks for a specific permission in the token claims.
     """
 
-    def dependency(claims: dict = Depends(verify_token)):
+    def dependency(claims: Annotated[Dict[str, Any], Depends(verify_token)]):
         permissions = claims.get("permissions", [])
         if required_scope not in permissions:
             raise HTTPException(
